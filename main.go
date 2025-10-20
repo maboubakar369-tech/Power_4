@@ -1,69 +1,58 @@
-package POWER_4
+package main
 
 import (
+	"context"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"time"
 )
 
 func main() {
-	// sert /style/* (ex: /style/css.css)
-	http.Handle("/style/", http.StripPrefix("/", http.FileServer(http.Dir("."))))
-
-	http.HandleFunc("/", serveHome)
-	http.HandleFunc("/move", handleMove)
-
-	log.Println("✅ Serveur lancé sur http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
-}
-
-func handleMove(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Move reçu"))
-}
-func serveHome(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Bienvenu sur le jeu"))
-}
-
-const (
-	Rows    = 6
-	Columns = 7
-)
-
-type Game struct {
-	Board         [Rows][Columns]int
-	currentplayer int
-	GameOver      bool
-	winner        int
-}
-
-func NewGame() *Game {
-	return &Game{currentplayer: 1}
-}
-
-func (p *Game) play(col int) bool {
-	if col < 0 || col >= Columns || p.GameOver {
-		return false
+	// Créer un serveur HTTP avec options
+	server := &http.Server{
+		Addr:    ":8080",
+		Handler: setupRouter(), // fonction qui retourne http.Handler avec routes + statiques
 	}
-	for row := Rows - 1; row >= 0; row-- {
-		cellstate := p.Board[row][col]
-		if cellstate == 0 {
-			p.Board[row][col] = p.currentplayer
-			if p.checkWin(row, col) {
-				p.GameOver = true
-				p.winner = p.currentplayer
-			} else {
-				p.changeturn()
-			}
-			return true
+
+	// Démarrer le serveur dans une goroutine pour pouvoir écouter l’arrêt proprement
+	go func() {
+		log.Printf("✅ Serveur démarré sur http://localhost%s\n", server.Addr)
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("Erreur serveur : %v", err)
 		}
+	}()
+
+	// Capturer le signal d’arrêt (Ctrl+C) pour shutdown propre
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt)
+
+	<-stop // on attend le signal d’arrêt
+
+	log.Println("🛑 Arrêt du serveur en cours...")
+
+	// Timeout de 5 secondes pour shutdown propre
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := server.Shutdown(ctx); err != nil {
+		log.Fatalf("Erreur lors de l'arrêt du serveur : %v", err)
 	}
-	return false
+
+	log.Println("✅ Serveur arrêté proprement")
 }
 
-func (p *Game) changeturn() {
-	if p.currentplayer == 1 {
-		p.currentplayer = 2
-	} else {
-		p.currentplayer = 1
-	}
+// setupRouter configure les routes et la gestion des fichiers statiques
+func setupRouter() http.Handler {
+	mux := http.NewServeMux()
 
+	// Servir les fichiers statiques
+	fileServer := http.FileServer(http.Dir("static"))
+	mux.Handle("/static/", http.StripPrefix("/static/", fileServer))
+
+	// Routes principales
+	registerRoutes(mux)
+
+	return mux
 }
