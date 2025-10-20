@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 )
-
 func main() {
 	// sert /style/* (ex: /style/css.css)
 	http.Handle("/style/", http.StripPrefix("/", http.FileServer(http.Dir("."))))

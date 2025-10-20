@@ -1,4 +1,4 @@
-<!doctype html>
+  <!doctype html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -7,17 +7,103 @@
     <link rel="stylesheet" href="Style.css">
 </head>
 <body>
-    <h1>PUISSANCE 4</h1>
-    <div class="game-board">
-        <div class="row">
-            <div class="cell" data-column="0"></div>
-            <div class="cell" data-column="1"></div>
-            <div class="cell" data-column="2"></div>
-            <div class="cell" data-column="3"></div>
-            <div class="cell" data-column="4"></div>
-            <div class="cell" data-column="5"></div>
-            <div class="cell" data-column="6"></div>
-        </div>
-    </div>
+    <h1>Puissance 4</h1>
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      height: 100vh;
+      background: #f0f0f0;
+      gap: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(7, 60px);
+      grid-template-rows: repeat(6, 60px);
+      gap: 5px;
+      background: #0077cc;
+      padding: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .cell {
+      width: 60px;
+      height: 60px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+    }
+    .red {
+      background: red;
+    }
+    .yellow {
+      background: yellow;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #0077cc;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #005fa3;
+    }
+  </style>
+</head>
+<body>
+  <div class="grid" id="grid"></div>
+  <button id="reset">Recommencer la partie</button>
+
+  <script>
+    const grid = document.getElementById('grid');
+    const resetBtn = document.getElementById('reset');
+    const rows = 6;
+    const cols = 7;
+    const cells = [];
+    let currentPlayer = 'red';
+
+    // Crée la grille
+    for (let r = 0; r < rows; r++) {
+      cells[r] = [];
+      for (let c = 0; c < cols; c++) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.dataset.row = r;
+        cell.dataset.col = c;
+        grid.appendChild(cell);
+        cells[r][c] = cell;
+      }
+    }
+
+    // Ajoute un pion dans la colonne
+    grid.addEventListener('click', (e) => {
+      const col = e.target.dataset.col;
+      if (col === undefined) return;
+
+      for (let r = rows - 1; r >= 0; r--) {
+        const cell = cells[r][col];
+        if (!cell.classList.contains('red') && !cell.classList.contains('yellow')) {
+          cell.classList.add(currentPlayer);
+          currentPlayer = currentPlayer === 'red' ? 'yellow' : 'red';
+          break;
+        }
+      }
+    });
+
+    // Réinitialise la partie
+    resetBtn.addEventListener('click', () => {
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          cells[r][c].classList.remove('red', 'yellow');
+        }
+      }
+      currentPlayer = 'red';
+    });
+  </script>
 </body>
 </html>
