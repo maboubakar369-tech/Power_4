@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 func main() {
-	// sert /style/* (ex: /style/css.css)
+
 	http.Handle("/style/", http.StripPrefix("/", http.FileServer(http.Dir("."))))
 
 	http.HandleFunc("/", serveHome)
@@ -65,4 +65,36 @@ func (p *Game) changeturn() {
 		p.currentplayer = 1
 	}
 
+}
+func (p *Game) checkWin(row, col int) bool {
+	currentplayer := p.Board[row][col]
+	directions := [][2]int{{1, 0}, {0, 1}, {1, 1}, {1, -1}}
+
+	for _, d := range directions {
+		count := 1
+		count += p.count(row, col, d[0], d[1], currentplayer)
+		count += p.count(row, col, -d[0], -d[1], currentplayer)
+		if count >= 4 {
+			return true
+		}
+	}
+	return false
+}
+func (p *Game) count(row, col, dRow, dCol, player int) int {
+	count := 0
+	for i := 1; i < 4; i++ {
+		nr := row + dRow*i
+		nc := col + dCol*i
+
+		if nr < 0 || nr >= Rows || nc < 0 || nc >= Columns {
+			break
+		}
+
+		if p.Board[nr][nc] == player {
+			count++
+		} else {
+			break
+		}
+	}
+	return count
 }
