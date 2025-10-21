@@ -1,10 +1,9 @@
-package POWER_4
+package main
 
 import (
-	"log"
+	"context"
 	"net/http"
 )
-
 func main() {
 
 	http.Handle("/style/", http.StripPrefix("/", http.FileServer(http.Dir("."))))
