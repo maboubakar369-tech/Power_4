@@ -2,60 +2,12 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="Interface web" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PUISSANCE 4</title>
     <link rel="stylesheet" href="Style.css">
 </head>
-<body>
-    <h1>Puissance 4</h1>
-    <style>
-      body {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-      height: 100vh;
-      background: #f0f0f0;
-      gap: 20px;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(7, 60px);
-      grid-template-rows: repeat(6, 60px);
-      gap: 5px;
-      background: #0077cc;
-      padding: 10px;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-    .cell {
-      width: 60px;
-      height: 60px;
-      background: white;
-      border-radius: 50%;
-      box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
-    }
-    .red {
-      background: red;
-    }
-    .yellow {
-      background: yellow;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      background: #0077cc;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #005fa3;
-    }
-  </style>
-</head>
-<body>
+<body>   
+   <h1>Puissance 4</h1> 
   <div class="grid" id="grid"></div>
   <button id="reset">Recommencer la partie</button>
 
@@ -67,7 +19,7 @@
     const cells = [];
     let currentPlayer = 'red';
 
-    // Crée la grille
+    // Crée la grille de jeu
     for (let r = 0; r < rows; r++) {
       cells[r] = [];
       for (let c = 0; c < cols; c++) {
@@ -80,7 +32,7 @@
       }
     }
 
-    // Ajoute un pion dans la colonne
+    // Ajoute un pion dans la colonne cliquée 
     grid.addEventListener('click', (e) => {
       const col = e.target.dataset.col;
       if (col === undefined) return;
@@ -95,7 +47,7 @@
       }
     });
 
-    // Réinitialise la partie
+    // Réinitialise la partie lorsque le bouton est cliqué 
     resetBtn.addEventListener('click', () => {
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {

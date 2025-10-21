@@ -1,0 +1,45 @@
+  body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      height: 100vh;
+      background: #c71f6daf;
+      gap: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(7, 60px);
+      grid-template-rows: repeat(6, 60px);
+      gap: 5px;
+      background: #0077cc;
+      padding: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .cell {
+      transition: background 0.3s ease;
+      width: 60px;
+      height: 60px;
+      background: rgb(125, 119, 172);
+      border-radius: 50%;
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+    }
+    .red {
+      background: red;
+    }
+    .yellow {
+      background: yellow;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #0077cc;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #005fa3;
+    }
