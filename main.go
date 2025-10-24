@@ -1,7 +1,7 @@
 package main
 
 import (
-	"context"
+	"html/template"
 	"net/http"
 )
 func main() {
@@ -15,12 +15,13 @@ func main() {
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
+func serveHome(w http.ResponseWriter, r *http.Request){
+	tpl := template.Must(template.ParseFiles("teste.html"))
+	_= tpl.Execute(w, nil)
+}
+
 func handleMove(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Move reçu"))
-}
-func serveHome(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Bienvenu sur le jeu"))
-}
+	w.Write([]byte("Move reçu"))}
 
 const (
 	Rows    = 6
