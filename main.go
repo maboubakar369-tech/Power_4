@@ -1,12 +1,17 @@
 package main
 
-import (
+import (   
+	"log"
 	"html/template"
-	"net/http"
+	"net/http"	
+	"strconv"
 )
+
+var game = NewGame()
+
 func main() {
 
-	http.Handle("/style/", http.StripPrefix("/", http.FileServer(http.Dir("."))))
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	http.HandleFunc("/", serveHome)
 	http.HandleFunc("/move", handleMove)
@@ -16,12 +21,28 @@ func main() {
 }
 
 func serveHome(w http.ResponseWriter, r *http.Request){
-	tpl := template.Must(template.ParseFiles("teste.html"))
-	_= tpl.Execute(w, nil)
+	tpl := template.Must(template.ParseFiles("templates/index.html"))
+	_= tpl.Execute(w, game)
 }
-
 func handleMove(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Move reçu"))}
+    colStr := r.URL.Query().Get("col")
+    if colStr == "" {
+        http.Error(w, "col param missing", http.StatusBadRequest)
+        return
+    }
+
+    col, err := strconv.Atoi(colStr)
+    if err != nil {
+        http.Error(w, "invalid column", http.StatusBadRequest)
+        return
+    }
+
+    if !game.GameOver {
+        game.play(col) 
+    }
+
+    http.Redirect(w, r, "/", http.StatusSeeOther)
+}
 
 const (
 	Rows    = 6
@@ -34,10 +55,15 @@ type Game struct {
 	GameOver      bool
 	winner        int
 }
-
-func NewGame() *Game {
-	return &Game{currentplayer: 1}
+func NewGame() Game {
+    return Game{
+        Board:         [Rows][Columns]int{},
+        currentplayer: 1,
+        GameOver:      false,
+        winner:        0,
+    }
 }
+
 
 func (p *Game) play(col int) bool {
 	if col < 0 || col >= Columns || p.GameOver {
@@ -99,3 +125,5 @@ func (p *Game) count(row, col, dRow, dCol, player int) int {
 	}
 	return count
 }
+
+
