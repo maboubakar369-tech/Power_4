@@ -1,45 +1,86 @@
-  body {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-      height: 100vh;
-      background: #c71f6daf;
-      gap: 20px;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(7, 60px);
-      grid-template-rows: repeat(6, 60px);
-      gap: 5px;
-      background: #0077cc;
-      padding: 10px;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-    .cell {
-      transition: background 0.3s ease;
-      width: 60px;
-      height: 60px;
-      background: rgb(125, 119, 172);
-      border-radius: 50%;
-      box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
-    }
-    .red {
-      background: red;
-    }
-    .yellow {
-      background: yellow;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      background: #0077cc;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #005fa3;
-    }
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: #c71f6daf;
+  gap: 20px;
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+h2 {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+/* Grille du jeu */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 70px);
+  grid-template-rows: repeat(6, 70px);
+  gap: 5px;
+  background: #0077cc;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* Chaque cellule */
+.cell {
+  width: 70px;
+  height: 70px;
+  background: rgb(125, 119, 172);
+  border-radius: 50%;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+  transition: background 0.3s ease;
+}
+
+.red {
+  background: red;
+}
+
+.yellow {
+  background: yellow;
+}
+
+/* Boutons flèches */
+.controls {
+  display: grid;
+  grid-template-columns: repeat(7, 70px);
+  gap: 5px;
+}
+
+.controls button {
+  width: 70px;
+  height: 40px;
+  font-size: 20px;
+  background: #0077cc;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.controls button:hover {
+  background: #005fa3;
+}
+
+/* Bouton reset */
+button[type="submit"], form[action="/reset"] button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background: #0077cc;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #005fa3;
+}

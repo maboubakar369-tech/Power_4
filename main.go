@@ -1,129 +1,50 @@
 package main
 
-import (   
-	"log"
+import (
 	"html/template"
-	"net/http"	
+	"log"
+	"net/http"
 	"strconv"
 )
+
+type PageData struct {
+	Game *Game
+	Cols []int
+}
 
 var game = NewGame()
 
 func main() {
-
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-
 	http.HandleFunc("/", serveHome)
 	http.HandleFunc("/move", handleMove)
+	http.HandleFunc("/reset", handleReset)
 
 	log.Println("✅ Serveur lancé sur http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-func serveHome(w http.ResponseWriter, r *http.Request){
+func serveHome(w http.ResponseWriter, r *http.Request) {
 	tpl := template.Must(template.ParseFiles("templates/index.html"))
-	_= tpl.Execute(w, game)
+	data := PageData{
+		Game: game,
+		Cols: []int{0, 1, 2, 3, 4, 5, 6},
+	}
+	tpl.Execute(w, data)
 }
+
 func handleMove(w http.ResponseWriter, r *http.Request) {
-    colStr := r.URL.Query().Get("col")
-    if colStr == "" {
-        http.Error(w, "col param missing", http.StatusBadRequest)
-        return
-    }
-
-    col, err := strconv.Atoi(colStr)
-    if err != nil {
-        http.Error(w, "invalid column", http.StatusBadRequest)
-        return
-    }
-
-    if !game.GameOver {
-        game.play(col) 
-    }
-
-    http.Redirect(w, r, "/", http.StatusSeeOther)
-}
-
-const (
-	Rows    = 6
-	Columns = 7
-)
-
-type Game struct {
-	Board         [Rows][Columns]int
-	currentplayer int
-	GameOver      bool
-	winner        int
-}
-func NewGame() Game {
-    return Game{
-        Board:         [Rows][Columns]int{},
-        currentplayer: 1,
-        GameOver:      false,
-        winner:        0,
-    }
-}
-
-
-func (p *Game) play(col int) bool {
-	if col < 0 || col >= Columns || p.GameOver {
-		return false
+	colStr := r.URL.Query().Get("col")
+	col, err := strconv.Atoi(colStr)
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
 	}
-	for row := Rows - 1; row >= 0; row-- {
-		cellstate := p.Board[row][col]
-		if cellstate == 0 {
-			p.Board[row][col] = p.currentplayer
-			if p.checkWin(row, col) {
-				p.GameOver = true
-				p.winner = p.currentplayer
-			} else {
-				p.changeturn()
-			}
-			return true
-		}
-	}
-	return false
+	game.Play(col)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func (p *Game) changeturn() {
-	if p.currentplayer == 1 {
-		p.currentplayer = 2
-	} else {
-		p.currentplayer = 1
-	}
-
+func handleReset(w http.ResponseWriter, r *http.Request) {
+	game.Reset()
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
-func (p *Game) checkWin(row, col int) bool {
-	currentplayer := p.Board[row][col]
-	directions := [][2]int{{1, 0}, {0, 1}, {1, 1}, {1, -1}}
-
-	for _, d := range directions {
-		count := 1
-		count += p.count(row, col, d[0], d[1], currentplayer)
-		count += p.count(row, col, -d[0], -d[1], currentplayer)
-		if count >= 4 {
-			return true
-		}
-	}
-	return false
-}
-func (p *Game) count(row, col, dRow, dCol, player int) int {
-	count := 0
-	for i := 1; i < 4; i++ {
-		nr := row + dRow*i
-		nc := col + dCol*i
-
-		if nr < 0 || nr >= Rows || nc < 0 || nc >= Columns {
-			break
-		}
-
-		if p.Board[nr][nc] == player {
-			count++
-		} else {
-			break
-		}
-	}
-	return count
-}
-
-
