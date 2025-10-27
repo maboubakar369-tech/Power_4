@@ -1,0 +1,52 @@
+body {
+  background-color: #535454; /* rose doux comme ta page du jeu */
+  font-family: "Poppins", sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+}
+
+h1 {
+  font-size: 3em;
+  color: #3b1d1d;
+  margin-bottom: 40px;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.description {
+  font-size: 2.3em;
+  color: #a78686;
+  margin-bottom: 60px;
+  text-align: center;
+  width: 60%;
+  line-height: 2.6;
+}
+
+button {
+  background-color: #04a49f;
+  color: rgb(31, 14, 14);
+  font-size: 1.3em;
+  font-weight: 600;
+  padding: 15px 40px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(20, 12, 12, 0.2);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: #11151b;
+  transform: scale(1.05);
+}
+
+footer {
+  position: absolute;
+  bottom: 20px;
+  font-size: 0.9em;
+  color: #3d2b2b;
+  opacity: 0.7;
+}

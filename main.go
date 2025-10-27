@@ -7,16 +7,13 @@ import (
 	"strconv"
 )
 
-type PageData struct {
-	Game *Game
-	Cols []int
-}
-
 var game = NewGame()
 
 func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-	http.HandleFunc("/", serveHome)
+
+	http.HandleFunc("/", serveHome)     // Page d'accueil
+	http.HandleFunc("/game", serveGame) // Page du jeu
 	http.HandleFunc("/move", handleMove)
 	http.HandleFunc("/reset", handleReset)
 
@@ -24,27 +21,43 @@ func main() {
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
+// Page d'accueil
 func serveHome(w http.ResponseWriter, r *http.Request) {
+	tpl := template.Must(template.ParseFiles("templates/homes.html"))
+	tpl.Execute(w, nil)
+}
+
+// Page du jeu
+func serveGame(w http.ResponseWriter, r *http.Request) {
 	tpl := template.Must(template.ParseFiles("templates/index.html"))
-	data := PageData{
+	data := struct {
+		Game *Game
+		Cols []int
+	}{
 		Game: game,
 		Cols: []int{0, 1, 2, 3, 4, 5, 6},
 	}
 	tpl.Execute(w, data)
 }
 
+// Jouer un coup
 func handleMove(w http.ResponseWriter, r *http.Request) {
 	colStr := r.URL.Query().Get("col")
 	col, err := strconv.Atoi(colStr)
 	if err != nil {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Error(w, "invalid column", http.StatusBadRequest)
 		return
 	}
-	game.Play(col)
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+
+	if !game.GameOver {
+		game.Play(col)
+	}
+
+	http.Redirect(w, r, "/game", http.StatusSeeOther)
 }
 
+// Réinitialiser la partie
 func handleReset(w http.ResponseWriter, r *http.Request) {
-	game.Reset()
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	game = NewGame()
+	http.Redirect(w, r, "/game", http.StatusSeeOther)
 }
